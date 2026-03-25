@@ -1,6 +1,6 @@
 # Merge and Sort Intervals
 # https://www.hackerrank.com/challenges/merge-and-sort-intervals
-# Difficulty: Easy
+# Difficulty: Medium
 
 def mergeHighDefinitionIntervals(intervals):
     if not intervals:
