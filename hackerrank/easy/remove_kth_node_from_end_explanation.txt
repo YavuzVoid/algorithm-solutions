@@ -1,0 +1,124 @@
+================================================================================
+  ONE-PASS REMOVAL OF K-TH NODE FROM END
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Bir singly linked list ve bir k tamsayısı veriliyor. Sondan k. node'u tek
+geçişte (one traversal) silip yeni head'i döndür. k geçersizse listeyi
+olduğu gibi döndür.
+
+NOT: k 0-indexed. Yani sondan 0. eleman = son eleman, sondan 1. = sondan
+ikinci, vs.
+
+
+ÖRNEKLER:
+---------
+Örnek 1:
+  Input:  head = [5, 6, 7, 8], k = 3
+  Output: [6, 7, 8]
+  Açıklama: Liste 4 elemanlı. Sondan 3. eleman (0-indexed) = baştaki 5.
+            5 siliniyor, geriye [6, 7, 8] kalıyor.
+
+            Linked List:  5 -> 6 -> 7 -> 8 -> None
+            Sondan index: 3    2    1    0
+            k=3 → value 5 silinir.
+
+Örnek 2:
+  Input:  head = [5], k = 1
+  Output: [5]
+  Açıklama: Tek elemanlı liste. Sondan 1. eleman yok (0-indexed'de son
+            eleman index 0). k=1 geçersiz, liste aynen döner.
+
+Örnek 3:
+  Input:  head = [1, 2], k = 0
+  Output: [1]
+  Açıklama: Sondan 0. eleman = son eleman = 2. Siliniyor, geriye [1] kalıyor.
+
+
+ÇÖZÜM YAKLAŞIMI: Two-Pointer (Fast & Slow)
+--------------------------------------------
+Neden bu yaklaşım?
+  - Soru "tek geçişte" (one-pass) çözüm istiyor.
+  - Önce uzunluk bulup sonra silmek 2 geçiş olur, bu yüzden yasak.
+  - Two-pointer ile tek geçişte sondan k. elemana ulaşabiliriz.
+
+Nasıl çalışıyor?
+  1. Dummy node oluştur (head silinse bile sorun olmasın diye).
+  2. fast ve slow pointer'ları dummy'den başlat.
+  3. fast'i (k+2) adım ileri götür.
+     - Neden k+2? Çünkü k 0-indexed ve dummy node'dan başlıyoruz.
+       k+2 adım sonra fast ile slow arasında tam k+1 node fark olur.
+     - Bu sayede fast sona geldiğinde slow, silinecek node'un
+       BİR ÖNCESİNDE durur.
+  4. fast ve slow'u birlikte ilerlet (fast None olana kadar).
+  5. slow.next = slow.next.next → silinecek node atlanır.
+  6. dummy.next'i döndür (yeni head).
+
+Edge Case'ler:
+  - k < 0         → geçersiz, listeyi döndür
+  - k >= len(list) → fast None olur döngüde, listeyi döndür
+  - head silinmesi → dummy node sayesinde sorunsuz çalışır
+
+
+ADIM ADIM ÇALIŞMA (head = [5, 6, 7, 8], k = 3):
+-------------------------------------------------
+Başlangıç:
+  dummy -> 5 -> 6 -> 7 -> 8 -> None
+  fast = dummy, slow = dummy
+
+Adım 1 - fast'i k+2 = 5 adım ileri götür:
+  i=0: fast = 5
+  i=1: fast = 6
+  i=2: fast = 7
+  i=3: fast = 8
+  i=4: fast = None
+
+fast zaten None, while döngüsüne girmez.
+
+slow hâlâ dummy'de:
+  dummy -> [5] -> 6 -> 7 -> 8 -> None
+            ^
+         silinecek
+
+slow.next = slow.next.next → dummy.next = 6
+
+Sonuç: dummy -> 6 -> 7 -> 8 -> None → [6, 7, 8] ✓
+
+
+KOD:
+----
+def removeKthNodeFromEnd(head, k):
+    if k < 0:
+        return head
+
+    dummy = SinglyLinkedListNode(0)
+    dummy.next = head
+
+    fast = dummy
+    slow = dummy
+
+    for i in range(k + 2):
+        if fast is None:
+            return head
+        fast = fast.next
+
+    while fast is not None:
+        fast = fast.next
+        slow = slow.next
+
+    slow.next = slow.next.next
+
+    return dummy.next
+
+
+ZAMAN VE ALAN KARMAŞİKLIĞI:
+-----------------------------
+Zaman: O(n) - Listeyi tek geçişte tarıyoruz.
+Alan:  O(1) - Sadece birkaç pointer kullanıyoruz, ekstra veri yapısı yok.
+
+
+ANAHTAR KELİMELER:
+-------------------
+Linked List, Two Pointer, Fast & Slow Pointer, One-Pass, Dummy Node
