@@ -1,0 +1,93 @@
+================================================================================
+  REMOVE CONSECUTIVE DUPLICATES FROM SORTED LINKED LIST
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Sorted (non-decreasing) bir singly linked list veriliyor. Ardisik tekrar
+eden node'lari sil, her degerden sadece ilkini birak. Degistirilmis
+listenin head'ini dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  head = [1, 2, 2, 2, 3, 4, 4, 5]
+  Output: [1, 2, 3, 4, 5]
+
+  Adim adim:
+    1 -> 2 -> 2 -> 2 -> 3 -> 4 -> 4 -> 5
+    curr=1: next=2, farkli -> ilerle
+    curr=2: next=2, ayni  -> 2.next = 2 (sonraki) -> atla
+    curr=2: next=2, ayni  -> 2.next = 3 -> atla
+    curr=2: next=3, farkli -> ilerle
+    curr=3: next=4, farkli -> ilerle
+    curr=4: next=4, ayni  -> 4.next = 5 -> atla
+    curr=4: next=5, farkli -> ilerle
+    curr=5: next=None -> dur
+
+    Sonuc: 1 -> 2 -> 3 -> 4 -> 5
+
+Ornek 2:
+  Input:  head = [] (bos liste)
+  Output: [] (bos liste)
+
+Ornek 3:
+  Input:  head = [1]
+  Output: [1]
+
+
+COZUM YAKLASIMI: Tek Pointer ile Gezinme
+-----------------------------------------
+Neden bu yaklasim?
+  - Liste zaten sorted, yani duplicate'ler her zaman yan yana.
+  - Tek bir pointer ile listeyi gezip, ayni degerdeki node'lari
+    atlayarak silebiliriz.
+  - Ekstra veri yapisi veya karmasik mantik gerektirmiyor.
+
+Nasil calisiyor?
+  1. curr = head ile basla.
+  2. curr ve curr.next varken dongude kal.
+  3. Eger curr.data == curr.next.data ise:
+     - curr.next = curr.next.next (duplicate'i atla)
+     - curr'u ilerletme, cunku yeni next de duplicate olabilir
+  4. Degilse:
+     - curr = curr.next (bir sonrakine ilerle)
+  5. head'i dondur.
+
+Neden curr'u her zaman ilerletmiyoruz?
+  - Ornek: [2, 2, 2, 3] -> ilk 2'de next'i atliyoruz -> [2, 2, 3]
+  - Hala 2==2, tekrar atla -> [2, 3]
+  - Simdi 2!=3, ilerle. Eger hemen ilerlersek ortadaki 2'yi kaciririz.
+
+
+EDGE CASE'LER:
+--------------
+  - Bos liste (head=None)       -> None dondur
+  - Tek eleman                  -> Aynen dondur
+  - Tum elemanlar ayni [5,5,5]  -> [5]
+  - Hic duplicate yok [1,2,3]   -> [1,2,3] aynen dondur
+
+
+KOD:
+----
+def deleteDuplicates(head):
+    curr = head
+    while curr and curr.next:
+        if curr.data == curr.next.data:
+            curr.next = curr.next.next
+        else:
+            curr = curr.next
+    return head
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Listeyi tek geciste tariyoruz.
+Alan:  O(1) - Sadece bir pointer kullaniyoruz, ekstra alan yok.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Linked List, Remove Duplicates, Sorted List, In-Place, Two Pointer
