@@ -1,0 +1,147 @@
+================================================================================
+  REVERSE EVEN-INDEXED NODES AND APPEND
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Bir singly linked list veriliyor. Even-indexed (0, 2, 4, ...) node'lari
+cikar, ters cevir ve listenin sonuna ekle. Degistirilmis listenin head'ini
+dondur.
+
+NOT: Index 0'dan basliyor. Even index = sponsored node'lar.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  head = [10, 20, 30, 40, 50, 60]
+  Output: [20, 40, 60, 50, 30, 10]
+
+  Adim adim:
+    Orijinal liste:  10 -> 20 -> 30 -> 40 -> 50 -> 60
+    Index:            0     1     2     3     4     5
+
+    Step 1: Even-indexed node'lari cikar (index 0, 2, 4)
+            Sponsored:     10, 30, 50
+            Non-sponsored: 20, 40, 60
+
+    Step 2: Non-sponsored liste: 20 -> 40 -> 60
+
+    Step 3: Sponsored listeyi ters cevir: 50 -> 30 -> 10
+
+    Step 4: Ters cevrilen listeyi sona ekle:
+            20 -> 40 -> 60 -> 50 -> 30 -> 10
+
+Ornek 2:
+  Input:  head = [1]
+  Output: [1]
+  Aciklama: Tek eleman, even-indexed (index 0). Ters cevirince ayni.
+            Non-sponsored liste bos, sadece reversed even doner.
+
+Ornek 3:
+  Input:  head = [1, 2]
+  Output: [2, 1]
+  Aciklama: Even-indexed: [1] (index 0), Non-sponsored: [2] (index 1)
+            Ters cevir: [1]. Sona ekle: 2 -> 1
+
+
+COZUM YAKLASIMI: Listeyi Ayir, Ters Cevir, Birlestir
+------------------------------------------------------
+Neden bu yaklasim?
+  - Tek geciste (one traversal) even ve odd indexed node'lari ayirabiliriz.
+  - Ayirma islemi O(n), ters cevirme O(n/2), birlestirme O(n/2).
+  - Toplam O(n) zaman, O(1) ekstra alan.
+
+Nasil calisiyor?
+  1. even_head ve odd_head olarak iki ayri liste olustur.
+     - even: index 0, 2, 4, ... (sponsored)
+     - odd:  index 1, 3, 5, ... (non-sponsored)
+
+  2. Even ve odd pointer'lari kullanarak node'lari birbirine bagla:
+     - even.next = even.next.next (even node'lari zincirle)
+     - odd.next = odd.next.next   (odd node'lari zincirle)
+
+  3. Even listeyi ters cevir (klasik 3-pointer reversal):
+     - prev = None, curr = even_head
+     - Her adimda: curr.next = prev, prev = curr, curr = next
+
+  4. Odd listenin sonuna reversed even listeyi ekle.
+
+  5. odd_head'i dondur (yeni head).
+
+
+ADIM ADIM CALISMA (head = [10, 20, 30, 40, 50, 60]):
+-----------------------------------------------------
+Baslangic:
+  10 -> 20 -> 30 -> 40 -> 50 -> 60 -> None
+
+Adim 1 - Ayirma:
+  even_head: 10 -> 30 -> 50 -> None
+  odd_head:  20 -> 40 -> 60 -> None
+
+Adim 2 - Even listeyi ters cevir:
+  Iterasyon 1: prev=None,  curr=10 -> curr.next=None,  prev=10, curr=30
+  Iterasyon 2: prev=10,    curr=30 -> curr.next=10,    prev=30, curr=50
+  Iterasyon 3: prev=30,    curr=50 -> curr.next=30,    prev=50, curr=None
+
+  reversed_even: 50 -> 30 -> 10 -> None
+
+Adim 3 - Birlestir:
+  odd listenin sonu = 60
+  60.next = reversed_even (50)
+
+  Sonuc: 20 -> 40 -> 60 -> 50 -> 30 -> 10 -> None
+
+
+EDGE CASE'LER:
+--------------
+  - Bos liste (head=None)     -> None dondur
+  - Tek eleman                -> Sadece reversed even doner
+  - Iki eleman [a, b]         -> [b, a]
+  - Tum elemanlar even-indexed -> Non-sponsored bos, reversed even doner
+
+
+KOD:
+----
+def extractAndAppendSponsoredNodes(head):
+    if not head:
+        return head
+    even_head = head
+    odd_head = head.next
+    even = even_head
+    odd = odd_head
+    while even and even.next and even.next.next:
+        even.next = even.next.next
+        odd.next = odd.next.next if odd.next else None
+        even = even.next
+        odd = odd.next if odd else None
+    even.next = None
+    if odd:
+        odd.next = None
+    prev = None
+    curr = even_head
+    while curr:
+        nxt = curr.next
+        curr.next = prev
+        prev = curr
+        curr = nxt
+    reversed_even = prev
+    if not odd_head:
+        return reversed_even
+    temp = odd_head
+    while temp.next:
+        temp = temp.next
+    temp.next = reversed_even
+    return odd_head
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Listeyi bir kez tariyoruz + ters cevirme + birlestirme
+Alan:  O(1) - Ekstra veri yapisi yok, sadece pointer'lar kullaniliyor
+
+
+ANAHTAR KELIMELER:
+-------------------
+Linked List, Even/Odd Index Split, Reverse Linked List, In-Place
