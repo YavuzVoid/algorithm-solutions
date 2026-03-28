@@ -1,0 +1,128 @@
+================================================================================
+  NEXT GREATER ELEMENT WITH POSITION OFFSET
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Bir integer array veriliyor. Her eleman icin sagindaki ilk buyuk elemani
+ve aralarindaki mesafeyi (index farki) bul. Buyuk eleman yoksa [-1, -1]
+dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  readings = [2, 1, 2, 4, 3]
+  Output: [[4, 3], [2, 1], [4, 1], [-1, -1], [-1, -1]]
+
+  Adim adim:
+    i=0, deger=2: Sagdaki ilk buyuk = 4 (index 3), mesafe = 3-0 = 3 -> [4, 3]
+    i=1, deger=1: Sagdaki ilk buyuk = 2 (index 2), mesafe = 2-1 = 1 -> [2, 1]
+    i=2, deger=2: Sagdaki ilk buyuk = 4 (index 3), mesafe = 3-2 = 1 -> [4, 1]
+    i=3, deger=4: Sagda buyuk eleman yok -> [-1, -1]
+    i=4, deger=3: Sagda buyuk eleman yok -> [-1, -1]
+
+Ornek 2:
+  Input:  readings = [5]
+  Output: [[-1, -1]]
+  Aciklama: Tek eleman, saginda hicbir sey yok.
+
+Ornek 3:
+  Input:  readings = [1, 2, 3, 4, 5]
+  Output: [[2, 1], [3, 1], [4, 1], [5, 1], [-1, -1]]
+  Aciklama: Artan dizi, her elemanin next greater'i hemen sagindaki.
+
+Ornek 4:
+  Input:  readings = [5, 4, 3, 2, 1]
+  Output: [[-1, -1], [-1, -1], [-1, -1], [-1, -1], [-1, -1]]
+  Aciklama: Azalan dizi, hicbir elemanin saginda buyuk eleman yok.
+
+
+COZUM YAKLASIMI: Monotonic Stack
+---------------------------------
+Neden monotonic stack?
+  - Brute force: Her eleman icin sagdaki tum elemanlari tara -> O(n^2)
+  - Monotonic stack ile tek geciste cozulur -> O(n)
+  - Stack'te "henuz next greater'i bulunamamis" elemanlarin index'lerini
+    tutuyoruz.
+
+Nasil calisiyor?
+  1. Bos bir stack ve [-1, -1] ile dolu result array'i olustur.
+  2. Soldan saga her eleman icin:
+     a. Stack'in tepesindeki index'teki deger < mevcut deger mi?
+        - Evet: Stack'ten pop et. O index'in next greater'i bulundu.
+          result[idx] = [mevcut_deger, mevcut_index - idx]
+        - Bu kontrolu stack bosalana veya tepedeki >= mevcut olana kadar tekrarla.
+     b. Mevcut index'i stack'e push et.
+  3. Dongu bittiginde stack'te kalanlar icin next greater yok (zaten [-1, -1]).
+
+Neden stack'te index tutuyoruz?
+  - Hem degere (readings[idx]) hem mesafeye (i - idx) ihtiyacimiz var.
+  - Index'ten ikisine de ulasabiliriz.
+
+
+ADIM ADIM CALISMA (readings = [2, 1, 2, 4, 3]):
+-------------------------------------------------
+Baslangic: stack = [], result = [[-1,-1], [-1,-1], [-1,-1], [-1,-1], [-1,-1]]
+
+i=0, val=2:
+  Stack bos -> push 0
+  stack: [0]
+
+i=1, val=1:
+  readings[0]=2 >= 1 -> push 1
+  stack: [0, 1]
+
+i=2, val=2:
+  readings[1]=1 < 2 -> pop 1, result[1] = [2, 2-1] = [2, 1]
+  readings[0]=2 >= 2 -> dur, push 2
+  stack: [0, 2]
+
+i=3, val=4:
+  readings[2]=2 < 4 -> pop 2, result[2] = [4, 3-2] = [4, 1]
+  readings[0]=2 < 4 -> pop 0, result[0] = [4, 3-0] = [4, 3]
+  Stack bos -> push 3
+  stack: [3]
+
+i=4, val=3:
+  readings[3]=4 >= 3 -> push 4
+  stack: [3, 4]
+
+Dongu bitti. Stack'te 3 ve 4 kaldi -> next greater yok -> [-1, -1]
+
+Sonuc: [[4, 3], [2, 1], [4, 1], [-1, -1], [-1, -1]]
+
+
+EDGE CASE'LER:
+--------------
+  - Bos array []              -> Bos array dondur
+  - Tek eleman [5]            -> [[-1, -1]]
+  - Artan dizi [1,2,3]        -> Her elemanin next greater'i hemen sagi
+  - Azalan dizi [3,2,1]       -> Hepsi [-1, -1]
+  - Tum elemanlar ayni [2,2,2]-> Hepsi [-1, -1] (esit, buyuk degil)
+
+
+KOD:
+----
+def findNextGreaterElementsWithDistance(readings):
+    n = len(readings)
+    result = [[-1, -1]] * n
+    stack = []
+    for i in range(n):
+        while stack and readings[stack[-1]] < readings[i]:
+            idx = stack.pop()
+            result[idx] = [readings[i], i - idx]
+        stack.append(i)
+    return result
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Her eleman stack'e en fazla 1 kez girer ve 1 kez cikar.
+Alan:  O(n) - Stack ve result array'i icin.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Monotonic Stack, Next Greater Element, Array, Stack
