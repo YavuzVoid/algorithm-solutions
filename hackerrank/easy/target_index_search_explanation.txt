@@ -1,0 +1,85 @@
+================================================================================
+  TARGET INDEX SEARCH (Binary Search)
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Sorted (artan sirali) ve distinct (tekrarsiz) bir integer array ve bir
+target degeri veriliyor. Target'in index'ini dondur, yoksa -1 dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  nums = [1, 2, 3, 4, 5], target = 3
+  Output: 2
+  Aciklama: low=0, high=4, mid=2, nums[2]=3 == target -> return 2
+
+Ornek 2:
+  Input:  nums = [2, 4, 6, 8, 10, 12, 14, 16], target = 16
+  Output: 7
+  Adim adim:
+    low=0, high=7, mid=3, nums[3]=8 < 16 -> low=4
+    low=4, high=7, mid=5, nums[5]=12 < 16 -> low=6
+    low=6, high=7, mid=6, nums[6]=14 < 16 -> low=7
+    low=7, high=7, mid=7, nums[7]=16 == target -> return 7
+
+Ornek 3:
+  Input:  nums = [], target = 5
+  Output: -1
+  Aciklama: Bos array, target bulunamaz.
+
+
+COZUM YAKLASIMI: Binary Search (Ikili Arama)
+----------------------------------------------
+Neden binary search?
+  - Array sorted ve distinct. Linear search O(n) olur.
+  - Binary search O(log n) ile cok daha hizli.
+  - Her adimda arama alanini yariya indiriyoruz.
+
+Nasil calisiyor?
+  1. low = 0, high = n - 1 ile basla.
+  2. low <= high oldugu surece:
+     a. mid = (low + high) // 2 hesapla.
+     b. nums[mid] == target ise -> return mid (bulundu)
+     c. nums[mid] < target ise -> low = mid + 1 (sag yariya git)
+     d. nums[mid] > target ise -> high = mid - 1 (sol yariya git)
+  3. Dongu biterse target yok -> return -1
+
+
+EDGE CASE'LER:
+--------------
+  - Bos array []           -> return -1
+  - Tek eleman, eslesme    -> return 0
+  - Tek eleman, eslesmeme  -> return -1
+  - Target en basta        -> return 0
+  - Target en sonda        -> return n-1
+  - Target array'de yok    -> return -1
+
+
+KOD:
+----
+def binarySearch(nums, target):
+    low = 0
+    high = len(nums) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(log n) - Her adimda arama alani yariya iniyor.
+Alan:  O(1) - Sadece birka degisken kullaniliyor.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Binary Search, Sorted Array, Search, Divide and Conquer
