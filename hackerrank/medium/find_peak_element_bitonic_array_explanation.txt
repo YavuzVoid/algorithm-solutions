@@ -1,0 +1,83 @@
+================================================================================
+  FIND PEAK ELEMENT IN BITONIC ARRAY
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Bitonic (once artan sonra azalan) bir array veriliyor. Maksimum elemanin
+index'ini O(log n) zamanda bul.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  counts = [1, 3, 5, 4, 2]
+  Output: 2
+
+  Adim adim:
+    low=0, high=4, mid=2: counts[2]=5 > counts[3]=4 -> high=2
+    low=0, high=2, mid=1: counts[1]=3 < counts[2]=5 -> low=2
+    low=2, high=2 -> return 2
+
+Ornek 2:
+  Input:  counts = [1, 2, 3, 2, 1]
+  Output: 2
+
+Ornek 3:
+  Input:  counts = [1, 3, 2]
+  Output: 1
+
+
+COZUM YAKLASIMI: Binary Search
+--------------------------------
+Neden binary search?
+  - Bitonic array'de peak'in solunda artan, saginda azalan sira var.
+  - mid noktasinda counts[mid] < counts[mid+1] ise peak sagda.
+  - counts[mid] > counts[mid+1] ise peak mid'de veya solda.
+  - Her adimda aralik yariya iniyor -> O(log n).
+
+Nasil calisiyor?
+  1. low=0, high=n-1 ile basla.
+  2. low < high oldugu surece:
+     a. mid = (low + high) // 2
+     b. counts[mid] < counts[mid+1] -> artan bolgedeyiz, peak sagda -> low = mid + 1
+     c. counts[mid] > counts[mid+1] -> azalan bolgedeyiz, peak mid veya solda -> high = mid
+  3. low == high olunca peak bulundu -> return low
+
+Neden high = mid (mid - 1 degil)?
+  - mid'in kendisi peak olabilir. mid - 1 yaparsak onu kaciririz.
+  - counts[mid] > counts[mid+1] demek mid peak olabilir demek.
+
+
+EDGE CASE'LER:
+--------------
+  - 3 elemanli array [1, 3, 2]  -> Peak ortada
+  - Peak en basta olamaz (constraint: 0 < p < n-1)
+  - Peak en sonda olamaz (constraint)
+  - Tum elemanlar distinct
+
+
+KOD:
+----
+def findPeakIndex(counts):
+    low = 0
+    high = len(counts) - 1
+    while low < high:
+        mid = (low + high) // 2
+        if counts[mid] < counts[mid + 1]:
+            low = mid + 1
+        else:
+            high = mid
+    return low
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(log n) - Her adimda arama alani yariya iniyor.
+Alan:  O(1) - Sadece birka degisken kullaniliyor.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Binary Search, Bitonic Array, Peak Element, Divide and Conquer
