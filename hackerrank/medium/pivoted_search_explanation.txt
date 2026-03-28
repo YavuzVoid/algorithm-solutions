@@ -1,0 +1,110 @@
+================================================================================
+  PIVOTED SEARCH (Search in Rotated Sorted Array)
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Sorted ve unique bir integer array bilinmeyen bir noktadan rotate edilmis.
+Bu rotated array'de target degerinin index'ini bul, yoksa -1 dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  nums = [1609466400, 1609470000, 1609473600, 1609459200, 1609462800]
+          target = 1609459200
+  Output: 3
+
+  Adim adim:
+    left=0, right=4, mid=2, nums[2]=1609473600
+    nums[left]=1609466400 <= nums[mid] -> sol yari sorted
+    target 1609459200 bu aralikta degil -> left=3
+
+    left=3, right=4, mid=3, nums[3]=1609459200 == target -> return 3
+
+Ornek 2:
+  Input:  nums = [4, 5, 6, 7, 0, 1, 2], target = 0
+  Output: 4
+
+  Adim adim:
+    left=0, right=6, mid=3, nums[3]=7
+    nums[0]=4 <= 7 -> sol yari [4,5,6,7] sorted
+    target=0, 4 <= 0 degil -> left=4
+
+    left=4, right=6, mid=5, nums[5]=1
+    nums[4]=0 <= 1 -> sol yari [0,1] sorted
+    0 <= 0 < 1 -> right=4
+
+    left=4, right=4, mid=4, nums[4]=0 == target -> return 4
+
+Ornek 3:
+  Input:  nums = [], target = 5
+  Output: -1
+
+
+COZUM YAKLASIMI: Modified Binary Search
+-----------------------------------------
+Neden bu yaklasim?
+  - Normal binary search sorted array'de calisir.
+  - Rotated array'de her mid noktasinda bir yari kesinlikle sorted.
+  - Sorted olan yariyi tespit edip target'in orada olup olmadigina bakariz.
+
+Nasil calisiyor?
+  1. left=0, right=n-1 ile basla.
+  2. mid hesapla. nums[mid] == target ise return mid.
+  3. Sol yari sorted mi kontrol et: nums[left] <= nums[mid]
+     - Evet: target [nums[left], nums[mid]) araliginda mi?
+       - Evet -> right = mid - 1 (sol yarida ara)
+       - Hayir -> left = mid + 1 (sag yarida ara)
+     - Hayir: sag yari sorted demektir.
+       - target (nums[mid], nums[right]] araliginda mi?
+       - Evet -> left = mid + 1
+       - Hayir -> right = mid - 1
+  4. Dongu biterse return -1.
+
+Neden her zaman bir yari sorted?
+  - Rotate edilmis array'de pivot sadece bir yerde.
+  - mid'in solunda veya saginda pivot var, diger taraf sorted.
+
+
+EDGE CASE'LER:
+--------------
+  - Bos array []              -> return -1
+  - Tek eleman, eslesme       -> return 0
+  - Rotate edilmemis array    -> normal binary search gibi calisir
+  - Target array'de yok       -> return -1
+  - Pivot en basta veya sonda -> yine dogru calisir
+
+
+KOD:
+----
+def searchRotatedTimestamps(nums, target):
+    left = 0
+    right = len(nums) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if nums[mid] == target:
+            return mid
+        if nums[left] <= nums[mid]:
+            if nums[left] <= target < nums[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        else:
+            if nums[mid] < target <= nums[right]:
+                left = mid + 1
+            else:
+                right = mid - 1
+    return -1
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(log n) - Her adimda arama alani yariya iniyor.
+Alan:  O(1) - Sadece birka degisken kullaniliyor.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Binary Search, Rotated Sorted Array, Search, Divide and Conquer
