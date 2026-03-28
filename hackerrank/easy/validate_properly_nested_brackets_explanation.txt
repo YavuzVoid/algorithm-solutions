@@ -1,0 +1,105 @@
+================================================================================
+  VALIDATE PROPERLY NESTED BRACKETS
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Bir string veriliyor. Icindeki tum parantezler ('()', '{}', '[]') dogru
+eslestirilmis ve ic ice gecmis mi kontrol et. Gecerliyse 1, degilse 0 dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  "if (a[0] > b[1]) { doSomething(); }"
+  Output: 1
+  Aciklama: '(' ile ')', '[' ile ']', '{' ile '}' dogru eslesmis.
+
+Ornek 2:
+  Input:  "int x = 42; // no brackets here"
+  Output: 1
+  Aciklama: Hic parantez yok, bu gecerli sayilir.
+
+Ornek 3:
+  Input:  "() {} []"
+  Output: 1
+  Aciklama: Tum parantezler dogru eslesmis.
+
+Ornek 4 (gecersiz):
+  Input:  "([)]"
+  Output: 0
+  Aciklama: '[' acilmis ama ')' ile kapatilmaya calisilmis. Yanlis nesting.
+
+Ornek 5 (gecersiz):
+  Input:  "((("
+  Output: 0
+  Aciklama: Acilan parantezler kapatilmamis.
+
+
+COZUM YAKLASIMI: Stack (Yigin)
+-------------------------------
+Neden stack?
+  - Parantez eslestirme klasik bir stack problemidir.
+  - Son acilan parantez ilk kapatilmali (LIFO - Last In First Out).
+  - Stack tam olarak bu siralamayi saglar.
+
+Nasil calisiyor?
+  1. Bos bir stack olustur.
+  2. String'deki her karakter icin:
+     - Acma parantezi ise ('(', '{', '[') -> stack'e ekle (push)
+     - Kapama parantezi ise (')', '}', ']'):
+       a. Stack bos mu? -> Bossa eslesen acma yok, return 0
+       b. Stack'in tepesi eslesen acma parantezi mi? -> Degilse return 0
+       c. Eslesiyorsa -> stack'ten cikar (pop)
+     - Baska karakter ise -> atla (harfler, rakamlar, bosluklar vs.)
+  3. Dongu bittikten sonra stack bos mu?
+     - Bossa -> tum parantezler eslesmis, return 1
+     - Doluysa -> kapatilmamis parantezler var, return 0
+
+
+ADIM ADIM CALISMA (input = "{[()]}"):
+--------------------------------------
+  Karakter '{': Acma -> stack: ['{']
+  Karakter '[': Acma -> stack: ['{', '[']
+  Karakter '(': Acma -> stack: ['{', '[', '(']
+  Karakter ')': Kapama -> stack tepesi '(' == matching[')'] -> pop -> stack: ['{', '[']
+  Karakter ']': Kapama -> stack tepesi '[' == matching[']'] -> pop -> stack: ['{']
+  Karakter '}': Kapama -> stack tepesi '{' == matching['}'] -> pop -> stack: []
+
+  Stack bos -> return 1 (gecerli)
+
+
+EDGE CASE'LER:
+--------------
+  - Bos string ""           -> Stack bos, return 1 (gecerli)
+  - Sadece harfler "abc"    -> Hic parantez yok, stack bos, return 1
+  - Tek parantez "("        -> Stack dolu, return 0
+  - Yanlis siralama "([)]"  -> Eslesmeme, return 0
+  - Ic ice "{[()]}"         -> Dogru nesting, return 1
+
+
+KOD:
+----
+def areBracketsProperlyMatched(code_snippet):
+    stack = []
+    matching = {')': '(', '}': '{', ']': '['}
+    for ch in code_snippet:
+        if ch in '({[':
+            stack.append(ch)
+        elif ch in ')}]':
+            if not stack or stack[-1] != matching[ch]:
+                return 0
+            stack.pop()
+    return 1 if not stack else 0
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - String'i tek geciste tariyoruz.
+Alan:  O(n) - En kotu durumda tum karakterler acma parantezi olabilir.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Stack, Bracket Matching, Parentheses Validation, LIFO
