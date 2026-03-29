@@ -1,0 +1,98 @@
+================================================================================
+  COUNT NUMBER PAIRS
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Sorted bir positive integer array ve bir target (budget) veriliyor.
+i < j ve prices[i] + prices[j] <= budget olan cift sayisini bul.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  prices = [1, 2, 3, 4, 5], budget = 7
+  Output: 8
+
+  Gecerli ciftler:
+    (1,2)=3  (1,3)=4  (1,4)=5  (1,5)=6
+    (2,3)=5  (2,4)=6  (2,5)=7  (3,4)=7
+  Toplam: 8
+
+Ornek 2:
+  Input:  prices = [], budget = 100
+  Output: 0
+
+Ornek 3:
+  Input:  prices = [5], budget = 5
+  Output: 0 (tek eleman, cift olusturulamaz)
+
+
+COZUM YAKLASIMI: Two-Pointer
+------------------------------
+Neden two-pointer?
+  - Array sorted, bu ozellikten faydalanabiliriz.
+  - Brute force O(n^2) olur, two-pointer O(n) ile cozer.
+
+Nasil calisiyor?
+  1. left=0 (en kucuk), right=n-1 (en buyuk) ile basla.
+  2. prices[left] + prices[right] <= budget ise:
+     - left ile right arasindaki TUM elemanlar right ile cift olusturabilir.
+       Cunku array sorted: prices[left] + prices[k] <= prices[left] + prices[right]
+       her k < right icin.
+     - Ama biz left sabit, right'a kadar olan ciftleri sayiyoruz:
+       (left, left+1), (left, left+2), ..., (left, right) = right - left cift.
+     - count += right - left, left += 1
+  3. prices[left] + prices[right] > budget ise:
+     - Toplam cok buyuk, right'i kucult -> right -= 1
+  4. left >= right olunca dur.
+
+Neden count += right - left?
+  - left sabitken, left+1'den right'a kadar tum j'ler icin
+    prices[left] + prices[j] <= budget (cunku prices[j] <= prices[right]).
+  - Bu right - left adet cift demek.
+
+
+ADIM ADIM CALISMA (prices = [1, 2, 3, 4, 5], budget = 7):
+-----------------------------------------------------------
+  left=0, right=4: 1+5=6 <= 7 -> count += 4 = 4, left=1
+  left=1, right=4: 2+5=7 <= 7 -> count += 3 = 7, left=2
+  left=2, right=4: 3+5=8 > 7  -> right=3
+  left=2, right=3: 3+4=7 <= 7 -> count += 1 = 8, left=3
+  left=3, right=3: left >= right, dur.
+  Sonuc: 8
+
+
+EDGE CASE'LER:
+--------------
+  - Bos array          -> 0
+  - Tek eleman         -> 0
+  - Tum ciftler gecerli -> n*(n-1)/2
+  - Hic cift gecerli degil -> 0
+
+
+KOD:
+----
+def countAffordablePairs(prices, budget):
+    count = 0
+    left = 0
+    right = len(prices) - 1
+    while left < right:
+        if prices[left] + prices[right] <= budget:
+            count += right - left
+            left += 1
+        else:
+            right -= 1
+    return count
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Her adimda left veya right bir adim ilerliyor.
+Alan:  O(1) - Sadece birka degisken kullaniliyor.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Two Pointer, Sorted Array, Pair Counting
