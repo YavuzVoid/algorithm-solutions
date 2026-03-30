@@ -1,0 +1,83 @@
+================================================================================
+  TWO SUM
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Positive integer array ve bir target veriliyor. Toplami target'a esit olan
+iki elemanin index'lerini dondur. Yoksa [-1, -1] dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  taskDurations = [2, 7, 11, 15], slotLength = 9
+  Output: [0, 1]
+  Aciklama: 2 + 7 = 9
+
+Ornek 2:
+  Input:  taskDurations = [1, 2, 3, 4], slotLength = 8
+  Output: [-1, -1]
+  Aciklama: Hicbir cift 8'e esit degil.
+
+Ornek 3:
+  Input:  taskDurations = [], slotLength = 10
+  Output: [-1, -1]
+
+
+COZUM YAKLASIMI: Hash Map (Dictionary)
+----------------------------------------
+Neden hash map?
+  - Brute force: her cifti dene -> O(n^2)
+  - Hash map ile tek geciste cozulur -> O(n)
+  - Her eleman icin "complement" (target - eleman) daha once goruldu mu kontrol et.
+
+Nasil calisiyor?
+  1. Bos bir dictionary (seen) olustur.
+  2. Her eleman d ve index i icin:
+     a. comp = slotLength - d hesapla.
+     b. comp seen'de var mi? -> Evet: [seen[comp], i] dondur (bulundu)
+     c. Yoksa: seen[d] = i (bu elemani kaydet)
+  3. Dongu biterse -> [-1, -1] dondur.
+
+Neden once kontrol sonra ekleme?
+  - Ayni elemani iki kez kullanmayi onler.
+  - i < j sirasini garanti eder (once eklenen daha kucuk index'e sahip).
+
+
+ADIM ADIM CALISMA ([2, 7, 11, 15], target=9):
+-----------------------------------------------
+  i=0, d=2: comp=7, seen={} -> yok. seen={2:0}
+  i=1, d=7: comp=2, seen={2:0} -> var! return [0, 1]
+
+
+EDGE CASE'LER:
+--------------
+  - Bos array          -> [-1, -1]
+  - Tek eleman         -> [-1, -1]
+  - Cift yok           -> [-1, -1]
+  - Birden fazla cift  -> Ilk bulunan dondurulur
+
+
+KOD:
+----
+def findTaskPairForSlot(taskDurations, slotLength):
+    seen = {}
+    for i, d in enumerate(taskDurations):
+        comp = slotLength - d
+        if comp in seen:
+            return [seen[comp], i]
+        seen[d] = i
+    return [-1, -1]
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Array'i tek geciste tariyoruz.
+Alan:  O(n) - Hash map icin en kotu durumda n eleman.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Hash Map, Two Sum, Complement Search, Dictionary
