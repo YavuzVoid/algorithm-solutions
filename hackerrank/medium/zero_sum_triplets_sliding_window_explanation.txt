@@ -1,0 +1,86 @@
+================================================================================
+  ZERO-SUM TRIPLETS WITHIN SLIDING WINDOW
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Bir integer array ve windowSize veriliyor. i < j < k ve
+array[i] + array[j] + array[k] = 0 ve k - i + 1 <= windowSize olan
+tum unique triplet'leri bul.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  readings = [1, -2, 1, 0, 5], windowSize = 3
+  Output: [[1, -2, 1]]
+  Aciklama: Sadece (0,1,2) indekslerindeki [1,-2,1] toplami 0.
+
+Ornek 2:
+  Input:  readings = [-1, 0, 1, 2, -1, -4], windowSize = 6
+  Output: [[-1, -1, 2], [-1, 0, 1]]
+
+
+COZUM YAKLASIMI: Sliding Window + Two Pointer (3Sum)
+------------------------------------------------------
+Neden bu yaklasim?
+  - Her pencere icinde 3Sum problemi cozuyoruz.
+  - Pencereyi sorted edip two-pointer ile O(w^2) cozum.
+  - Set kullanarak duplicate triplet'leri eliyoruz.
+
+Nasil calisiyor?
+  1. Her baslangic index i icin, [i, i+windowSize) penceresini al.
+  2. Pencereyi sirala.
+  3. Klasik 3Sum: ilk elemani sabitle, kalan ikisini two-pointer ile bul.
+  4. Bulunan triplet'leri set'e ekle (duplicate onleme).
+  5. Sonunda set'i listeye cevir.
+
+Duplicate onleme:
+  - Sorted triplet'leri tuple olarak set'e ekliyoruz.
+  - Ayni degerli triplet tekrar eklenmez.
+  - Two-pointer icinde de ayni degerleri atliyoruz (skip duplicates).
+
+
+KOD:
+----
+def findZeroSumTripletsInWindow(readings, windowSize):
+    n = len(readings)
+    result = set()
+    for i in range(n - 2):
+        end = min(i + windowSize, n)
+        window = readings[i:end]
+        window_sorted = sorted(window)
+        m = len(window)
+        for a in range(m - 2):
+            if a > 0 and window_sorted[a] == window_sorted[a - 1]:
+                continue
+            lo = a + 1
+            hi = m - 1
+            while lo < hi:
+                s = window_sorted[a] + window_sorted[lo] + window_sorted[hi]
+                if s == 0:
+                    result.add((window_sorted[a], window_sorted[lo], window_sorted[hi]))
+                    lo += 1
+                    hi -= 1
+                    while lo < hi and window_sorted[lo] == window_sorted[lo - 1]:
+                        lo += 1
+                    while lo < hi and window_sorted[hi] == window_sorted[hi + 1]:
+                        hi -= 1
+                elif s < 0:
+                    lo += 1
+                else:
+                    hi -= 1
+    return [list(t) for t in result]
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n * w^2) - n pencere, her pencerede O(w^2) 3Sum.
+Alan:  O(n) - Set ve gecici pencere dizileri icin.
+       w = windowSize
+
+
+ANAHTAR KELIMELER:
+-------------------
+3Sum, Two Pointer, Sliding Window, Hash Set, Triplet
