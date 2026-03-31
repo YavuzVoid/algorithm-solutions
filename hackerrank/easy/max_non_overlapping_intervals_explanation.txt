@@ -1,0 +1,70 @@
+================================================================================
+  MAXIMUM NUMBER OF NON-OVERLAPPING INTERVALS
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Interval'ler (baslangic, bitis) veriliyor. Maksimum kac tane cakismayan
+interval secebilecegimizi bul.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  meetings = [[1,2],[2,3],[3,4],[1,3]]
+  Output: 3
+  Aciklama: Bitis zamanina gore sirala: [[1,2],[2,3],[1,3],[3,4]]
+            Sec [1,2] -> [2,3] -> [3,4]. [1,3] cakisiyor, atla.
+
+Ornek 2:
+  Input:  meetings = [[0,5],[0,1],[1,2],[2,3],[3,5],[4,6]]
+  Output: 4
+  Aciklama: [0,1] -> [1,2] -> [2,3] -> [3,5]. Diger ikisi cakisiyor.
+
+
+COZUM YAKLASIMI: Greedy (Acgozlu) - Bitis Zamanina Gore Siralama
+------------------------------------------------------------------
+Neden greedy?
+  - En erken biten interval'i secmek, sonraki interval'ler icin
+    en fazla alan birakir.
+  - Bu klasik "Activity Selection Problem" cozumudur.
+  - Greedy secim optimal sonucu verir (kanitlanmis).
+
+Nasil calisiyor?
+  1. Interval'leri bitis zamanina gore sirala.
+  2. last_end = -1 ile basla (hicbir interval secilmedi).
+  3. Her interval icin:
+     - start >= last_end ise: cakismiyor, sec, last_end = end
+     - Degilse: cakisiyor, atla
+  4. Secilen interval sayisini dondur.
+
+Neden bitis zamanina gore siralama?
+  - Baslangic zamanina gore siralasak, uzun interval'ler kisa olanlari
+    engelleyebilir.
+  - Bitis zamanina gore siralama, her zaman en erken biten ve
+    cakismayan interval'i secer.
+
+
+KOD:
+----
+def maximizeNonOverlappingMeetings(meetings):
+    meetings.sort(key=lambda x: x[1])
+    count = 0
+    last_end = -1
+    for start, end in meetings:
+        if start >= last_end:
+            count += 1
+            last_end = end
+    return count
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n log n) - Siralama icin.
+Alan:  O(1) - Ekstra alan yok (in-place sort).
+
+
+ANAHTAR KELIMELER:
+-------------------
+Greedy, Interval Scheduling, Activity Selection, Sort by End Time
