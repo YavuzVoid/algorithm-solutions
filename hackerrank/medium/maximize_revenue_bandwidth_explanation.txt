@@ -1,0 +1,70 @@
+================================================================================
+  MAXIMIZE REVENUE FROM VIDEO STREAMS WITH BANDWIDTH LIMIT
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+N video stream var, her birinin boyutu (MB) ve geliri (dolar) var.
+Toplam B MB bant genisligi ile maksimum geliri bul.
+Stream'ler kismen gonderilebilir (oransal gelir).
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  sizes=[10,20,30], revenues=[60,100,120], B=50
+  Output: 240.0
+
+  Adim adim:
+    Yogunluk (revenue/size): [6, 5, 4]
+    Azalan sirala: stream 0 (6), stream 1 (5), stream 2 (4)
+    Stream 0: 10 MB al -> gelir 60, kalan B=40
+    Stream 1: 20 MB al -> gelir 100, kalan B=20
+    Stream 2: 20/30 oraninda al -> gelir 120*(20/30)=80
+    Toplam: 60 + 100 + 80 = 240.0
+
+
+COZUM YAKLASIMI: Fractional Knapsack (Greedy)
+-----------------------------------------------
+Neden greedy?
+  - Kesirli (fractional) knapsack'te greedy optimal sonuc verir.
+  - En yuksek yogunluklu (revenue/size) item'i once al.
+  - Tam sigmiyorsa kalan kapasiteye oranla kismi al.
+
+Nasil calisiyor?
+  1. Her stream icin yogunluk = revenue / size hesapla.
+  2. Yogunluga gore azalan sirala.
+  3. Sirasyla stream'leri al:
+     - Tam sigiyorsa: tamamini al, B'yi azalt.
+     - Sigmiyorsa: kalan B kadar kismi al, oransal gelir ekle.
+  4. Toplam geliri dondur.
+
+
+KOD:
+----
+def allocateBandwidthMaxRevenue(N, sizes, revenues, B):
+    items = sorted(range(N), key=lambda i: revenues[i] / sizes[i], reverse=True)
+    total = 0.0
+    remaining = B
+    for i in items:
+        if remaining <= 0:
+            break
+        if sizes[i] <= remaining:
+            total += revenues[i]
+            remaining -= sizes[i]
+        else:
+            total += revenues[i] * (remaining / sizes[i])
+            remaining = 0
+    return total
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n log n) - Siralama icin.
+Alan:  O(n) - Siralama icin index listesi.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Greedy, Fractional Knapsack, Sort by Density

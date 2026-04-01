@@ -23,5 +23,5 @@ leetcode/
 
 | Platform | Easy | Medium | Hard | Toplam |
 |----------|------|--------|------|--------|
-| HackerRank | 13 | 8 | 2 | 23 |
+| HackerRank | 13 | 9 | 2 | 24 |
 | LeetCode | 0 | 0 | 0 | 0 |
