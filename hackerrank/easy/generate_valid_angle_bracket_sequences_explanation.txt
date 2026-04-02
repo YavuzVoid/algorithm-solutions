@@ -1,0 +1,64 @@
+================================================================================
+  GENERATE VALID ANGLE BRACKET SEQUENCES
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+n cift '<' ve '>' parantez ile olusturulabilecek tum gecerli (dogru
+ic ice gecmis) dizileri dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1: n=1 -> ["<>"]
+Ornek 2: n=2 -> ["<<>>", "<><>"]
+Ornek 3: n=3 -> ["<<<>>>", "<<><>>", "<<>><>", "<><<>>", "<><><>"]
+
+Not: n=3 icin 5 sonuc var. Bu Catalan sayisi C(3) = 5.
+
+
+COZUM YAKLASIMI: Backtracking
+-------------------------------
+Neden backtracking?
+  - Tum gecerli kombinasyonlari uretmemiz lazim.
+  - Her adimda '<' veya '>' ekleyebiliriz ama kurallara uymali.
+  - Backtracking ile gecersiz dallari erken keseriz.
+
+Kurallar:
+  - '<' ekleyebiliriz eger acilan parantez sayisi < n ise.
+  - '>' ekleyebiliriz eger kapanan sayisi < acilan sayisi ise
+    (yani eslestirilmemis '<' varsa).
+
+Nasil calisiyor?
+  1. Bos string ile basla, open=0, close=0.
+  2. open == n ve close == n ise: gecerli dizi, result'a ekle.
+  3. open < n ise: '<' ekle, open+1 ile devam et.
+  4. close < open ise: '>' ekle, close+1 ile devam et.
+
+
+KOD:
+----
+def generateAngleBracketSequences(n):
+    result = []
+    def bt(s, open_count, close_count):
+        if open_count == n and close_count == n:
+            result.append(s)
+            return
+        if open_count < n:
+            bt(s + '<', open_count + 1, close_count)
+        if close_count < open_count:
+            bt(s + '>', open_count, close_count + 1)
+    bt('', 0, 0)
+    return result
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(4^n / sqrt(n)) - Catalan sayisi kadar sonuc uretiliyor.
+Alan:  O(n) - Recursion derinligi 2n.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Backtracking, Generate Parentheses, Catalan Number, Recursion
