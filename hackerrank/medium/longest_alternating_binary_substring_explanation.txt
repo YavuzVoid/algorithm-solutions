@@ -1,0 +1,77 @@
+================================================================================
+  LONGEST ALTERNATING BINARY SUBSTRING WITH LIMITED FLIPS
+  Platform: HackerRank | Zorluk: Medium | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Binary string s ve integer k veriliyor. En fazla k bit flip ile
+alternating (0101... veya 1010...) yapilabilecek en uzun substring'in
+uzunlugunu bul.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  s = "010101", k = 0
+  Output: 6
+  Aciklama: Zaten alternating, flip gerekmez.
+
+Ornek 2:
+  Input:  s = "1001101", k = 2
+  Output: 7
+  Aciklama: "1010101" pattern'ine 2 flip ile donusturulur (index 2 ve 3).
+
+
+COZUM YAKLASIMI: Sliding Window + Iki Pattern
+-----------------------------------------------
+Neden sliding window?
+  - En uzun substring ariyoruz -> sliding window klasik yaklasim.
+  - Pencere icindeki flip sayisini takip edip k'yi asinca solu daraltiyoruz.
+
+Neden iki pattern?
+  - Alternating iki sekilde olabilir: 0101... veya 1010...
+  - Her ikisini de deneyip en iyisini aliyoruz.
+
+Nasil calisiyor?
+  1. Her start_char ('0' ve '1') icin:
+     a. left=0, flips=0 ile basla.
+     b. right'i ilerlet. Beklenen karakter = (start_char + right) % 2.
+     c. s[right] != expected ise flips++.
+     d. flips > k ise left'i ilerlet, gerekirse flips--.
+     e. best = max(best, right - left + 1).
+  2. En buyuk best'i dondur.
+
+
+KOD:
+----
+def longestAlternatingSubstring(s, k):
+    n = len(s)
+    if n == 0:
+        return 0
+    best = 0
+    for start_char in '01':
+        flips = 0
+        left = 0
+        for right in range(n):
+            expected = str((int(start_char) + right) % 2)
+            if s[right] != expected:
+                flips += 1
+            while flips > k:
+                exp_left = str((int(start_char) + left) % 2)
+                if s[left] != exp_left:
+                    flips -= 1
+                left += 1
+            best = max(best, right - left + 1)
+    return best
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Her pattern icin tek gecis, 2 pattern = O(2n) = O(n).
+Alan:  O(1) - Sabit ekstra alan.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Sliding Window, Binary String, Alternating, Two Pointer
