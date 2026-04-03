@@ -1,0 +1,50 @@
+================================================================================
+  CHECK VALID ANAGRAM
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Iki string s ve t veriliyor. t, s'nin anagrami mi kontrol et.
+Anagram ise 1, degilse 0 dondur.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  s = "listen", t = "silent"
+  Output: 1
+  Aciklama: Ayni harfler, ayni frekanslarda.
+
+Ornek 2:
+  Input:  s = "hello", t = "bellow"
+  Output: 0
+  Aciklama: Farkli uzunluklar (5 vs 6).
+
+
+COZUM YAKLASIMI: Counter (Frekans Haritasi)
+---------------------------------------------
+Nasil calisiyor?
+  1. Uzunluklar farkli ise hemen 0 dondur.
+  2. Her iki string'in karakter frekanslarini Counter ile hesapla.
+  3. Counter'lar esitse 1, degilse 0 dondur.
+
+
+KOD:
+----
+def isAnagram(s, t):
+    if len(s) != len(t):
+        return 0
+    from collections import Counter
+    return 1 if Counter(s) == Counter(t) else 0
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(n) - Her iki string'i bir kez tariyoruz.
+Alan:  O(1) - En fazla 26 harf (sabit alfabe boyutu).
+
+
+ANAHTAR KELIMELER:
+-------------------
+Hash Map, Counter, Anagram, String, Frequency
