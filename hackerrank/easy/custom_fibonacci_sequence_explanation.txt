@@ -1,0 +1,35 @@
+================================================================================
+  CUSTOM FIBONACCI SEQUENCE
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+F(0)=1, F(1)=2, F(n)=F(n-1)+F(n-2) olan ozel Fibonacci dizisinde
+n. elemani dondur (0-indexed).
+
+
+ORNEKLER:
+---------
+Ornek 1: n=3 -> 5   (dizi: 1, 2, 3, 5)
+Ornek 2: n=10 -> 144 (dizi: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144)
+
+
+COZUM: Iteratif iki degisken ile O(n) zaman, O(1) alan.
+
+KOD:
+----
+def getAutoSaveInterval(n):
+    if n == 0:
+        return 1
+    if n == 1:
+        return 2
+    a, b = 1, 2
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b
+
+
+ZAMAN: O(n) | ALAN: O(1)
+
+ANAHTAR KELIMELER: Fibonacci, Dynamic Programming, Iterative
