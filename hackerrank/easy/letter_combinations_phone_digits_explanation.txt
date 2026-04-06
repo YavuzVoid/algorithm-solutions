@@ -1,0 +1,65 @@
+================================================================================
+  LEXICOGRAPHICAL LETTER COMBINATIONS OF PHONE DIGITS
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+Telefon tuslarindaki rakamlara karsilik gelen harflerle olusturulabilecek
+tum kombinasyonlari leksikografik sirada dondur.
+'0' -> "0", '1' -> "1", '2' -> "abc", ..., '9' -> "wxyz"
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  digits = "23"
+  Output: ['ad','ae','af','bd','be','bf','cd','ce','cf']
+
+Ornek 2:
+  Input:  digits = "203"
+  Output: ['a0d','a0e','a0f','b0d','b0e','b0f','c0d','c0e','c0f']
+
+
+COZUM YAKLASIMI: Backtracking
+-------------------------------
+Nasil calisiyor?
+  1. Her rakam icin karsilik gelen harfleri mapping'den al.
+  2. Backtracking ile her pozisyon icin tum harfleri dene.
+  3. Tum pozisyonlar doldugunda sonucu result'a ekle.
+  4. Sonucu sorted() ile leksikografik sirala.
+
+Mapping zaten leksikografik sirada oldugu icin backtracking
+dogal olarak sirali sonuc uretir, sorted() garanti icin eklenir.
+
+
+KOD:
+----
+def minTasksToCancelForNoConflict(digits):
+    if not digits:
+        return []
+    mapping = {
+        '0': '0', '1': '1', '2': 'abc', '3': 'def',
+        '4': 'ghi', '5': 'jkl', '6': 'mno', '7': 'pqrs',
+        '8': 'tuv', '9': 'wxyz'
+    }
+    result = []
+    def bt(i, path):
+        if i == len(digits):
+            result.append(path)
+            return
+        for ch in mapping[digits[i]]:
+            bt(i + 1, path + ch)
+    bt(0, '')
+    return sorted(result)
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(4^n) - Her rakam en fazla 4 harf (7 ve 9). n = digits uzunlugu.
+Alan:  O(n) - Recursion derinligi n.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Backtracking, Phone Keypad, Letter Combinations, Recursion
