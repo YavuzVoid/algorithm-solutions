@@ -1,0 +1,83 @@
+================================================================================
+  PLACE N CAMERAS WITHOUT CONFLICT ON BLOCKED GRID
+  Platform: HackerRank | Zorluk: Easy | Dil: Python 3
+================================================================================
+
+SORU:
+-----
+NxN grid'de 0 bos, 1 bloklu. N kamerayi bos hucrelere yerlestir,
+hicbir ikisi ayni satir, sutun veya caprazda olmasin. Mumkunse True dondur.
+Klasik N-Queens probleminin blocked cell varyanti.
+
+
+ORNEKLER:
+---------
+Ornek 1:
+  Input:  N=4, grid = tumu 0 (bos)
+  Output: True
+  Aciklama: Standart 4-Queens cozumu var.
+
+Ornek 2:
+  Input:  N=4, grid bazi hucreler bloklu
+  Output: True
+  Aciklama: Bloklu hucreleri atlayarak gecerli yerlestirme bulunur.
+
+Ornek 3:
+  Input:  N=2, grid = [[0,1],[1,0]]
+  Output: 0
+  Aciklama: Sadece capraz hucreler bos, iki kamera caprazda cakisir.
+
+
+COZUM YAKLASIMI: Backtracking (N-Queens)
+------------------------------------------
+Nasil calisiyor?
+  1. Satir satir ilerle (her satirda 1 kamera).
+  2. Her sutun icin kontrol et:
+     - Hucre bloklu mu? (grid[row][col] == 1 -> atla)
+     - Sutun kullanildi mi? (cols set'i)
+     - Sol capraz kullanildi mi? (row - col -> diag1 set'i)
+     - Sag capraz kullanildi mi? (row + col -> diag2 set'i)
+  3. Gecerliyse yerlestir, sonraki satira gec.
+  4. Son satira ulasirsa True dondur.
+  5. Hicbir sutun calismiyorsa geri don (backtrack), False dondur.
+
+Neden set kullaniyoruz?
+  - O(1) lookup ile sutun ve capraz kontrolu.
+  - Backtrack'te O(1) ekleme/silme.
+
+
+KOD:
+----
+def canPlaceSecurityCameras(N, grid):
+    cols = set()
+    diag1 = set()
+    diag2 = set()
+    def bt(row):
+        if row == N:
+            return True
+        for col in range(N):
+            if grid[row][col] == 1:
+                continue
+            if col in cols or (row - col) in diag1 or (row + col) in diag2:
+                continue
+            cols.add(col)
+            diag1.add(row - col)
+            diag2.add(row + col)
+            if bt(row + 1):
+                return True
+            cols.remove(col)
+            diag1.remove(row - col)
+            diag2.remove(row + col)
+        return False
+    return bt(0)
+
+
+ZAMAN VE ALAN KARMASIKLIGI:
+-----------------------------
+Zaman: O(N!) - Worst case tum permutasyonlari dener, ama pruning ile cok daha hizli.
+Alan:  O(N) - Set'ler ve recursion derinligi.
+
+
+ANAHTAR KELIMELER:
+-------------------
+Backtracking, N-Queens, Grid, Diagonal Check
